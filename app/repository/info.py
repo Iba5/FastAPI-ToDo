@@ -59,3 +59,13 @@ class Trepo:
     def FinishedTask(self):
         finished=[i for i in self.data if i.done is True]
         return finished
+    
+
+
+
+    """
+    What I learnt today using this inbuilt:
+    How the functions behave
+    how to use the List comprehensions
+    how an interface is created in python
+    """

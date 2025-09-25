@@ -10,13 +10,16 @@ class InterfaceRepo(ABC):
     def UpdateTask(self, id:int, inf:Task)->Tasks:
         pass
     @abstractmethod
-    def DeleteTask(self,id:int)->Tasks:
+    def DeleteTask(self,id:int):
         pass
     @abstractmethod
-    def DisplayTask(self, id:int)->Tasks:
+    def DisplayTask(self, id:int):
         pass
     @abstractmethod
     def DisplayAll(self):
+        pass
+    @abstractmethod
+    def FinishedTasks(self, id:int):
         pass
 
 
@@ -39,3 +42,20 @@ class Trepo:
                 return temp
         raise     
         
+    def DeleteTask(self, id:int):
+        for index ,i in enumerate(self.data):
+            if i.id == id:
+                self.data.pop(index)
+                return True
+        return False        
+
+    def DisplayTask(self, id: int):
+        temp=[i for i in self.data if i.id==id]
+        return temp
+
+    def DisplayAll(self):
+        return self.data
+    
+    def FinishedTask(self):
+        finished=[i for i in self.data if i.done is True]
+        return finished

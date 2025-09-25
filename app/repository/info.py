@@ -16,7 +16,7 @@ class InterfaceRepo(ABC):
     def DisplayTask(self, id:int)->Tasks:
         pass
     @abstractmethod
-    def DisplayAll(self)->[data]:
+    def DisplayAll(self):
         pass
 
 

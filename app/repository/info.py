@@ -9,6 +9,15 @@ class InterfaceRepo(ABC):
     @abstractmethod
     def UpdateTask(self, id:int, inf:Task)->Tasks:
         pass
+    @abstractmethod
+    def DeleteTask(self,id:int)->Tasks:
+        pass
+    @abstractmethod
+    def DisplayTask(self, id:int)->Tasks:
+        pass
+    @abstractmethod
+    def DisplayAll(self)->[data]:
+        pass
 
 
 class Trepo:

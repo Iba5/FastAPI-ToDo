@@ -1,9 +1,9 @@
-from models.task import Task,Tasks
+from models.task import *
 from typing import List
 
 class TaskRepo:
     def __init__(self):
-        self.data:List[Task]=[]
+        self.data:List[Tasks]=[]
         self.id_counter=1
 
     def AddTask(self,inf:Task)->Tasks:
@@ -12,10 +12,43 @@ class TaskRepo:
         self.id_counter+=1
         return temp
     
-    def UpdateTask(self,id: int):
+    def UpdateTask(self, id:int, inf:Task):
         for index, i in enumerate(self.data):
-            if  index == id:
+            if  i.id == id:
                 temp = Tasks(id=index, **inf.model_dump())
-                i = temp
+                self.data[index]=temp
+                return temp
+        
 
-                
+"""
+if using model_dump() since we are using pydantic v2:
+
+1. you look at the class Task which is the base model
+2. Connect it to the class Tasks which contains the id
+3. You create a Lists of the structure class Task
+4. Since the Id is to be generated automatically you then set it to a specific val
+
+How to add the data:
+
+1. When you add, always take a Task, assign an id, and convert to Tasks.
+2. model_dump() is just a way of unpacking the Task fields into Tasks.
+3. After you create a Tasks object, push it into self.data
+
+How to update data:
+
+1. The update function must receive:
+2. The id (to find the right task).
+3. The new Task data (to replace/update).
+4. Then you must:
+5. Loop over self.data.
+6. Find the task with matching id.
+7. Replace it inside the list (self.data[index] = new_object)
+
+How to see things in this repo:
+
+    Treat Task as the DTO for input validation. Inside my repository, 
+    I only persist Tasks, which includes the business identifier (id). 
+    That lets me query, update, and manage tasks reliably. 
+    The list is effectively my fake database table, 
+    so it must contain entities (Tasks) not DTOs (Task).
+"""

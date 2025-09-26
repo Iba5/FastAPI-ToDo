@@ -1,25 +1,29 @@
 from fastapi import APIRouter
 from models.task import *
-from repository.info import *
+from services.logic import *
 
 router = APIRouter()
+repo=Trepo()
+serv = services(repo)
 
 @router.get("/todos/{id}")
-def display(id:int):
-    return
+async def Display(id:int,inf:Task):
+    return serv.DisplayTodo(id)
 
 
 @router.get("/todos")
-def DisplayAll():
-    return
+async def DisplayAll():
+    return serv.DisplayAll()
 
 
 @router.post("/todos/add")
-def CreateToDo():
-    return
+def createToDo(inf:Task):
+    return  serv.CreateToDo(inf)
 
 
-@router.put("/todos/update/{id}")
-def UpdateTodo():
-    return
-    #raise HTTPException(status_code=404, detail="{Id} Not found")
+@router.patch("/todos/update/{id}")
+def UpdateTodo(id:int,inf:Task):
+    return serv.UpdateToDo(id,inf)
+
+
+    

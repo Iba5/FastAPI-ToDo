@@ -6,12 +6,12 @@ class services:
     def __init__(self,repo:Trepo):
         self.repo = repo
     
-    def CreateToDo(self):
-        return self.repo.AddTask
+    def CreateToDo(self,inf:Task):
+        return self.repo.AddTask(inf)
     
-    def UpdateToDo(self, id:int, inf:Task):
+    def UpdateToDo(self, id:int,inf:Task):
         temp= self.repo.UpdateTask(id,inf)
-        if not id:
+        if not temp:
             raise HTTPException(status_code=404, detail="Invalid Id, id:{id} Not Found")
         return temp
     

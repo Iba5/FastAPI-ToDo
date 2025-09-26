@@ -1,4 +1,5 @@
 from repository.info import *
+from models.task import Task
 from fastapi import HTTPException
 
 class services:
@@ -8,11 +9,11 @@ class services:
     def CreateToDo(self):
         return self.repo.AddTask
     
-    def UpdateToDo(self, id:int):
+    def UpdateToDo(self, id:int, inf:Task):
+        temp= self.repo.UpdateTask(id,inf)
         if not id:
             raise HTTPException(status_code=404, detail="Invalid Id, id:{id} Not Found")
-        temp= self.repo.UpdateTask(id)
-        return 
+        return temp
     
     def DeleteTask(self,id:int):
         if not self.repo.DeleteTask(id):

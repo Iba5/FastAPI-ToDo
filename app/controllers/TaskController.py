@@ -7,7 +7,7 @@ repo=Trepo()
 serv = services(repo)
 
 @router.get("/todos/{id}")
-async def Display(id:int,inf:Task):
+async def Display(id:int):
     return serv.DisplayTodo(id)
 
 
@@ -23,7 +23,8 @@ def createToDo(inf:Task):
 
 @router.patch("/todos/update/{id}")
 def UpdateTodo(id:int,inf:Task):
-    return serv.UpdateToDo(id,inf)
+    temp = serv.UpdateToDo(id,inf)
+    return temp
 
 
     

@@ -35,12 +35,13 @@ class Trepo:
         return temp
     
     def UpdateTask(self, id:int, inf:Task):
+        temp = []
         for index, i in enumerate(self.data):
             if  i.id == id:
                 temp = Tasks(id=i.id, **inf.model_dump())
                 self.data[index]=temp
                 return temp
-        return 
+        return False
         
     def DeleteTask(self, id:int):
         for index ,i in enumerate(self.data):

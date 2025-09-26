@@ -34,13 +34,13 @@ class Trepo:
         self.id_counter+=1
         return temp
     
-    def UpdateTask(self, id:int, inf:Task)->Tasks:
+    def UpdateTask(self, id:int, inf:Task):
         for index, i in enumerate(self.data):
             if  i.id == id:
-                temp = Tasks(id=index, **inf.model_dump())
+                temp = Tasks(id=i.id, **inf.model_dump())
                 self.data[index]=temp
                 return temp
-        raise     
+        return 
         
     def DeleteTask(self, id:int):
         for index ,i in enumerate(self.data):

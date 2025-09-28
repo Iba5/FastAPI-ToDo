@@ -1,67 +1,87 @@
-from abc import ABC,abstractmethod
-from models.task import *
 from typing import List
+from fastapi import Depends
+from abc import ABC,abstractmethod
+from sqlmodel import Session, select
+from models.task import *
+from models.Dto import *
+from db.sessions import get_db
 
 class InterfaceRepo(ABC):
     @abstractmethod
-    def AddTask(self,inf:Task)->Tasks:
+    def AddTaskDB(self,CreateT:CreateTask)->Task:
         pass
     @abstractmethod
-    def UpdateTask(self, id:int, inf:Task)->Tasks:
+    def UpdateTaskDB(self,id:int, UpdateT:UpdateTask)->Optional[Task]:
         pass
     @abstractmethod
-    def DeleteTask(self,id:int):
+    def DeleteTaskDB(self,id:int)->Optional[Task]:
         pass
     @abstractmethod
-    def DisplayTask(self, id:int):
+    def DisplayTaskDB(self,id:int)->Optional[Task]:
         pass
     @abstractmethod
-    def DisplayAll(self):
+    def DisplayAllDB(self)->Task:
         pass
     @abstractmethod
-    def FinishedTasks(self, id:int):
+    def FinishedTasksDB(self ,id:int ,UpdateT:UpdateTask)->Optional[Task]:
+        pass
+    @abstractmethod
+    def get_by_id(self,id:int)->Optional[Task]:
         pass
 
 
-class Trepo:
-    def __init__(self):
-        self.data:List[Tasks]=[]
-        self.id_counter=1
+class Trepo(InterfaceRepo):
+    def __int__(self,db:Session=Depends(get_db)):
+        self.db=db
+
+    def get_by_id(self,id:int):
+        return self.db.exec(select(Task).where(Task.id==id)).first()
     
-    def AddTask(self,inf:Task)->Tasks:
-        temp=Tasks(id=self.id_counter,**inf.model_dump())
-        self.data.append(temp)
-        self.id_counter+=1
+    def AddTaskDB(self,CreateT:CreateTask):
+        temp = Task(**CreateT.model_dump())
+        self.db.add(temp)
+        self.db.commit()
+        self.db.refresh(temp)
         return temp
     
-    def UpdateTask(self, id:int, inf:Task):
-        temp = []
-        for index, i in enumerate(self.data):
-            if  i.id == id:
-                temp = Tasks(id=i.id, **inf.model_dump())
-                self.data[index]=temp
-                return temp
-        return False
+    def UpdateTaskDB(self,id:int, UpdateT:UpdateTask):
+        temp = Task(**UpdateT.model_dump())
+        task = self.get_by_id(id)
+        if task:
+            task=temp
+            self.db.add(task)
+            self.db.commit()
+            self.db.refresh(task)
+        return task
+    
+    def DeleteTaskDB(self,id:int):
+        task = self.get_by_id(id)
+        if task:
+            self.db.delete(task)
+            self.db.commit()
+        return task
+    
+    def DisplayTaskDB(self,id:int):
+        result =self.db.exec(select(Task).where(Task.id==id))
+        task =  result.first()
+        return task
+    
+    def DisplayAllDB(self)->Task:
+        return self.db.exec(select(Task)).all()
+     
+    def FinishedTasksDB(self ,id:int ,UpdateT:UpdateTask):
+        task = self.get_by_id(id)
+        if task:
+            for key, value in UpdateT.model_dump().items():
+                setattr(task, key, value)
+            self.db.add(task)
+            self.db.commit()
+            self.db.refresh(task)
+        return task
+    
+    def DisplayAllFinished(self):
+        return self.db.exec(select(Task).where(Task.finished==True)).all()
         
-    def DeleteTask(self, id:int):
-        for index ,i in enumerate(self.data):
-            if i.id == id:
-                self.data.pop(index)
-                return True
-        return False        
-
-    def DisplayTask(self, id: int):
-        temp=[i for i in self.data if i.id==id]
-        return temp
-
-    def DisplayAll(self):
-        return self.data
-    
-    def FinishedTask(self):
-        finished=[i for i in self.data if i.done is True]
-        return finished
-    
-
 
 
 """
@@ -81,7 +101,7 @@ How to add the data:
 
 1. When you add, always take a Task, assign an id, and convert to Tasks.
 2. model_dump() is just a way of unpacking the Task fields into Tasks.
-3. After you create a Tasks object, push it into self.data
+3. After you create a Tasks object, push it into data
 
 How to update data:
 
@@ -89,9 +109,9 @@ How to update data:
 2. The id (to find the right task).
 3. The new Task data (to replace/update).
 4. Then you must:
-5. Loop over self.data.
+5. Loop over data.
 6. Find the task with matching id.
-7. Replace it inside the list (self.data[index] = new_object)
+7. Replace it inside the list (data[index] = new_object)
 
 How to see things in this repo:
 
@@ -100,4 +120,9 @@ How to see things in this repo:
     That lets me query, update, and manage tasks reliably. 
     The list is effectively my fake database table, 
     so it must contain entities (Tasks) not DTOs (Task).
+
+    
+Updated : 28/09/25
+I have managed to connect the db as well as sessions, However the
+challenge is now in converting user input end time to be datetime or vice versa
 """

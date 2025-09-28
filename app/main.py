@@ -1,9 +1,22 @@
 from fastapi import FastAPI
-from controllers.TaskController import router as paths  
+from contextlib import asynccontextmanager
+from controllers.TaskController import router as paths
+from db.sessions import *
 
 
-apk= FastAPI(title="To Do List", description="The To Do List App")
+@asynccontextmanager
+async def lifespan(apk: FastAPI):
+    print("Starting up...")
+    create_db()   # create tables on startup
+    yield
+    print("Shutting down...")
+    engine.dispose()  # close connection pool
+
+
+apk= FastAPI(lifespan=lifespan,title="To Do List", description="The To Do List App")
 apk.include_router(paths)
+
+
 
 
 """

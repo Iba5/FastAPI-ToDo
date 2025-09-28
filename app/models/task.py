@@ -1,23 +1,24 @@
 from pydantic import BaseModel
-from datetime import datetime
+# from datetime import datetime
 from typing import Optional
 
 class tsk(BaseModel):
     id : int
     name: str
-    create_time: datetime 
-    end_time: str
+    create_time: str
+    # end_time: str | None
     finished: bool
 
 class UpdateTask(BaseModel):
     name:Optional[str]
-    end_time:Optional[str]
+    # end_time:Optional[str]
     finished:Optional [bool]
 
-class CreateTask(tsk):
+class CreateTask(BaseModel):
     name: str
-    end_time: str
+   # end_time: str | None
     finished: bool=False
+            
 
 """
 --> THE CHALLENGES FACED WHILE CREATING THIS TASK CLASS:

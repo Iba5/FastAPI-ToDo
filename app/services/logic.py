@@ -1,33 +1,44 @@
 from repository.info import *
-from models.task import Task
+from models.task import *
+from models.Dto import *
 from fastapi import HTTPException
 
 class services:
+    
     def __init__(self,repo:Trepo):
         self.repo = repo
     
-    def CreateToDo(self,inf:Task):
-        return self.repo.AddTask(inf)
     
-    def UpdateToDo(self, id:int,inf:Task):
-        temp= self.repo.UpdateTask(id,inf)
+    def CreateToDo(self,create:CreateTask):
+        self.repo.AddTaskDB(create)
+    
+    
+    def UpdateToDo(self, id:int, update:UpdateTask):
+        temp= self.repo.UpdateTaskDB(id,update)
         if not temp:
             raise HTTPException(status_code=404, detail=f"Invalid Id, id:{id} Not Found")
         return temp
+    
     
     def DeleteTask(self,id:int):
-        if not self.repo.DeleteTask(id):
+        if not self.repo.DeleteTaskDB(id):
             raise HTTPException(status_code=404, detail=f"Invalid Id, id:{id} Not Found")
-        return {"message":"id:{id} delete successful"}
+        return 
+    
+    
     def DisplayTodo(self,id:int):
-        temp= self.repo.DisplayTask(id)
+        temp= self.repo.DisplayTaskDB(id)
         if not temp:
             raise HTTPException(status_code=404, detail=f"Invalid Id, id:{id} Not Found")
         return temp
     
+    
     def DisplayAll(self):
-        return self.repo.DisplayAll()
+        return self.repo.DisplayAllDB()
     
-    def DisplayFinished(self):
-        return self.repo.FinishedTask()
     
+    def DisplayFinished(self, id:int, update:UpdateTask):
+        return self.repo.FinishedTasksDB(id,update)
+    
+    def DisplayAllDone(self):
+        return self.repo.DisplayAllFinished()
